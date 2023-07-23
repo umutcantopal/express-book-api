@@ -1,4 +1,6 @@
 import Book from "../config/models/Book.js"
+import ErrorResponse from "../utils/ErrorResponse.js"
+
 const errorResponseFunction = (res, error) => {
     if (process.env.NODE_ENV === 'development') {
         console.log(error)
@@ -21,7 +23,7 @@ const getBooks = async (req, res) => {
             data: books
         })
     } catch (error) {
-        errorResponseFunction(res, error)
+        next(error)
     }
 }
 
@@ -29,18 +31,18 @@ const getBooks = async (req, res) => {
  * get a single book information from api with their ID
  * GET /api/v1/books/:id
  */
-const getBook = async (req, res) => {
+const getBook = async (req, res, next) => {
     try {
         const book = await Book.findById(req.params.id)
         if (!book) {
-            return res.status(404).json({success: false})
+            return next(new ErrorResponse(`The content you are looking for with ${req.params.id} not found`, 404))
         }
         res.status(200).json({
             success: true,
             data: book
         })
     } catch (error) {
-        errorResponseFunction(res, error)
+        next(error)
     }
 }
 
@@ -48,7 +50,7 @@ const getBook = async (req, res) => {
  * create a book
  * POST /api/v1/books/
  */
-const createBook = async (req, res) => {
+const createBook = async (req, res, next) => {
     try {
         const book = await Book.create(req.body)
         res.status(201).json({
@@ -56,7 +58,7 @@ const createBook = async (req, res) => {
             data: book
         })
     } catch (error) {
-        errorResponseFunction(res, error)
+        next(error)
     }
 }
 
@@ -64,15 +66,15 @@ const createBook = async (req, res) => {
  * delete a book from db
  * DELETE /api/v1/books/:id
  */
-const deleteBook = async (req, res) => {
+const deleteBook = async (req, res, next) => {
     try {
         const book = await Book.findByIdAndDelete(req.params.id)
         if (!book) {
-            return res.status(404).json({success: false})
+            return next(new ErrorResponse(`The content you are looking for with ${req.params.id} not found`, 404))
         }
         res.status(204).json({success: true, data: {} })
     } catch (error) {
-        errorResponseFunction(res, error)
+        next(error)
     }
 }
 
@@ -80,21 +82,21 @@ const deleteBook = async (req, res) => {
  * update a book from db
  * PATCH /api/v1/books/:id
  */
-const updateBook = async (req, res) => {
+const updateBook = async (req, res, next) => {
     try {
         const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         })
         if (!book) {
-            return res.status(404).json({success: false})
+            return next(new ErrorResponse(`The content you are looking for with ${req.params.id} not found`, 404))
         }
         res.status(200).json({
             success: true,
             data: book
         })
     } catch (error) {
-        errorResponseFunction(res, error)
+        next(error)
     }
 }
 
