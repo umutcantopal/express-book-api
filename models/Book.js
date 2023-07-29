@@ -1,4 +1,6 @@
 import mongoose from "mongoose"
+import slugify from "slugify"
+
 // TODO updated_at, avg ratings
 // TODO some field are related change them later
 const BookSchema = new mongoose.Schema({
@@ -65,6 +67,12 @@ const BookSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+})
+
+BookSchema.pre('save', function() {
+    this.slug = slugify(this.name, {
+        lower: true
+    })
 })
 
 const Book = mongoose.model('Book', BookSchema)
