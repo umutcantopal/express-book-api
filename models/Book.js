@@ -69,10 +69,12 @@ const BookSchema = new mongoose.Schema({
     }
 })
 
-BookSchema.pre('save', function() {
+BookSchema.pre('save', function(next) {
+    // TODO append a random number end of slug because there might be differen books with same name 
     this.slug = slugify(this.name, {
         lower: true
     })
+    next()
 })
 
 const Book = mongoose.model('Book', BookSchema)

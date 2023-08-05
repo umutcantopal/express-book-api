@@ -7,10 +7,59 @@ import ErrorResponse from "../utils/ErrorResponse.js"
  * GET /api/v1/books/
  */
 const getBooks = asyncHandler(async (req, res) => {
-    const books = await Book.find()
+    const requestQuery = { ...req.query }
+    const removeFields = ['sort', 'select', 'page', 'limit']
+    removeFields.forEach(param => delete requestQuery[param])
+
+    let queryStr = JSON.stringify(requestQuery)
+
+    // filtering
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`)
+
+    let query = Book.find(JSON.parse(queryStr))
+
+    // sorting
+    if (req.query.sort) {
+        const sortBy = req.query.sort.split(',').join(' ')
+        query = query.sort(sortBy)
+    }
+
+    // selecting fields
+    if (req.query.select) {
+        const selectedFields = req.query.select.split(',').join(' ')
+        query = query.select(selectedFields)
+    }
+
+    // pagination
+    const page = parseInt(req.query.page, 10) || 1
+    const limit = parseInt(req.query.limit, 10) || 10
+    const skipDocumentNum = (page - 1) * limit
+    const endIndex = page * limit
+    const totalCount = await Book.countDocuments()
+
+    const paginationInfo = {}
+
+    if (totalCount > endIndex) {
+        paginationInfo.next = {
+            page: page + 1,
+            limit
+        }
+    }
+
+    if (skipDocumentNum > 0) {
+        paginationInfo.prev = {
+            page: page - 1,
+            limit
+        }
+    }
+
+    query = query.skip(skipDocumentNum).limit(limit)
+    
+    const books = await query
     res.status(200).json({
         success: true,
         count: books.length,
+        pagination: paginationInfo,
         data: books
     })
 })
