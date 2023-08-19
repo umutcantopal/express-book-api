@@ -10,19 +10,11 @@ import ErrorResponse from "../utils/ErrorResponse.js"
  */
 const getComments = asyncHandler(async (req, res, next) => {
     if (req.params.bookId) {
-        const query = await Comment.find({ book: req.params.bookId })
-        res.status(200).json({
-            success: true,
-            count: query.length,
-            data: query
-        })
+        // comments for a book
+        res.status(200).json(res.advancedResults)
     } else {
-        const query = await Comment.find()
-        res.status(200).json({
-            success: true,
-            count: query.length,
-            data: query
-        })
+        // all comments
+        res.status(200).json(res.advancedResults)
     }
 })
 
