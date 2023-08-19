@@ -1,6 +1,5 @@
 import express from 'express'
-import { getBooks, createBook, getBook, deleteBook, updateBook } from '../controllers/books.js'
-import { createComment, getComments } from '../controllers/comments.js'
+import { getBooks, createBook, getBook, deleteBook, updateBook, uploadPhoto } from '../controllers/books.js'
 import commentRoutes from './comments.js'
 
 const router = express.Router()
@@ -8,6 +7,7 @@ const router = express.Router()
 
 // redirect to another controller routes
 router.use('/:bookId/comments', commentRoutes)
+router.use('/:bookId/photo', uploadPhoto)
 
 router.route('/')
     .get(getBooks)

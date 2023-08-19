@@ -1,6 +1,8 @@
 import Book from "../models/Book.js"
 import asyncHandler from "../middleware/asyncHandler.js"
 import ErrorResponse from "../utils/ErrorResponse.js"
+import path from 'path'
+import fs from "fs"
 
 /**
  * get all book informations from api
@@ -121,10 +123,64 @@ const updateBook = asyncHandler(async (req, res, next) => {
     })
 })
 
+/** 
+ * upload a photo for book model
+ * PATCH /api/v1/books/:id/photo
+*/
+const uploadPhoto = asyncHandler(async (req, res, next) => {
+    const file = req?.files?.file
+    const book = await Book.findById(req.params.bookId)
+    if (!book) {
+        return next(new ErrorResponse(`The content you are looking for with ${req.params.id} not found`, 404))
+    }
+
+    if (!file) {
+        return next(new ErrorResponse('Upload a file', 400))
+    }
+
+    if (!file.mimetype.startsWith('image')) {
+       return next(new ErrorResponse('Upload an image file', 400))
+    }
+
+    if (file.size > process.env.MAX_FILE_SIZE) {
+        return next(new ErrorResponse(`applicable max file size is ${process.env.MAX_FILE_SIZE} bytes`, 400))
+    }
+
+    if (book.image) {
+        // delete old image if exists
+        fs.stat(`${process.env.FILE_UPLOAD_PATH}/${book.image}`, async (err, stat) => {
+            if (stat) {
+                await fs.unlink(`${process.env.FILE_UPLOAD_PATH}/${book.image}`, (err) => {
+                    if (err) {
+                        return next(new ErrorResponse('old image uploaded for this content could not removed', 400))
+                    }
+                })
+            }
+        })
+    }
+
+    file.name = `image-${req.params.bookId}-${Math.ceil(Math.random() * 10000000000)}${path.parse(file.name).ext}`
+
+    file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (error) => {
+        if (error) {
+            console.log(error)
+            return next(new ErrorResponse('something went wrong', 400))
+        }
+
+        book.image = file.name
+        const updatedRecord = await book.save()
+        res.status(200).json({
+            success: true,
+            data: updatedRecord
+        })
+    })
+})
+
 export {
     getBooks,
     createBook,
     deleteBook,
     updateBook,
-    getBook
+    getBook,
+    uploadPhoto
 }

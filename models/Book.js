@@ -54,8 +54,7 @@ const BookSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: false,
-        default: 'no-image.jpg'
+        required: false
     },
     ISBN: {
         type: String,
