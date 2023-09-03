@@ -1,7 +1,6 @@
 import ErrorResponse from "../utils/ErrorResponse.js"
 
 const errorHandler = (err, req, res, next) => {
-    // console.log(err)
     let error = { ...err }
     error.message = err.message
     if (err.name === 'CastError') { // bad request id error
@@ -10,7 +9,7 @@ const errorHandler = (err, req, res, next) => {
     }
 
     if (err.code === 11000) { // duplicate entity error
-        const message = 'Duplicate Content'
+        const message = `Duplicate Content [${Object.keys(err.keyPattern)}]`
         error = new ErrorResponse(message, 400)
     }
 
