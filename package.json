@@ -12,9 +12,11 @@
   "author": "Umut Can Topal",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-fileupload": "^1.4.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.3.2",
     "slugify": "^1.6.6"
   },

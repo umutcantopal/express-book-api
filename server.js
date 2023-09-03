@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import booksRoutes from './routes/books.js'
 import commentsRoutes from './routes/comments.js'
+import authRoutes from './routes/auth.js'
 import connectDB from './config/db.js'
 import errorHandler from './middleware/error.js'
 import fileUpload from 'express-fileupload'
@@ -30,6 +31,7 @@ const NODE_ENV = process.env.NODE_ENV
 
 app.use('/api/v1/books', booksRoutes)
 app.use('/api/v1/comments', commentsRoutes)
+app.use('/api/v1/auth', authRoutes)
 
 app.use(errorHandler)
 
