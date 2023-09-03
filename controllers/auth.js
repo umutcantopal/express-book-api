@@ -45,7 +45,19 @@ const login = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, token })
 })
 
+/**
+ * get logged user's data
+ * GET /api/v1/auth/me
+ */
+const getLoggedUserData = asyncHandler(async (req, res, next) => {
+  return res.status(200).json({
+    success: true,
+    data: req.user
+  })
+})
+
 export {
   register,
   login,
+  getLoggedUserData,
 }
