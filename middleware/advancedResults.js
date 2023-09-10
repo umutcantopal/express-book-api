@@ -1,6 +1,6 @@
 const advancedResults = (model) => async (req, res, next) => {
     const requestQuery = { ...req.query }
-    const removeFields = ['sort', 'select', 'page', 'limit']
+    const removeFields = ['sort', 'select', 'page', 'limit', 'populate']
     removeFields.forEach(param => delete requestQuery[param])
 
     let queryStr = JSON.stringify(requestQuery)
@@ -46,6 +46,11 @@ const advancedResults = (model) => async (req, res, next) => {
     }
 
     query = query.skip(skipDocumentNum).limit(limit)
+
+    // populate
+    if (req.query.populate) {
+        query = query.populate(req.query.populate)
+    }
     
     const results = await query
 

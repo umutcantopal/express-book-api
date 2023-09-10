@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import User from "./User.js"
 
 const CommentSchema = new mongoose.Schema({
     // TODO don't have user model yet
@@ -23,6 +24,11 @@ const CommentSchema = new mongoose.Schema({
         required: true,
         default: true
     },
+    owner: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: true
+    }
     // TODO add like and dislike
     // TODO one user one comment for a book
 })

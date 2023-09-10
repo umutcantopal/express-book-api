@@ -41,6 +41,17 @@ const checkUserRole = (...roles) => {
   }
 }
 
+/**
+ * check if logged in user can do the action
+ * some actions can only be done by only that user like editing comment.
+ * some of them themself or admin or moderator.
+ */
+const checkUser = () => {
+  return (req, res, next) => {
+    //
+  }
+}
+
 export {
   checkAuthToken,
   checkUserRole
